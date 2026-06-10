@@ -19,7 +19,7 @@ public class CategoryController {
 
     private final CategoryServiceImpl categoryService;
 
-    @GetMapping
+    @GetMapping("/all")
     public List<CategoryResponse> getAllCategories(@AuthenticationPrincipal User user) {
         return categoryService.getAllCategories(user.getId());
     }
@@ -31,7 +31,7 @@ public class CategoryController {
         return categoryService.createCategory(user.getId(), request);
     }
 
-    @GetMapping
+    @GetMapping("/categoriesByType")
     public List<CategoryResponse> getAllCategoriesByType(
             @AuthenticationPrincipal User user,
             @RequestParam Type type) {
