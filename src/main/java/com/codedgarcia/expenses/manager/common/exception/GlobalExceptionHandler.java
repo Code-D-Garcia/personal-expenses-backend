@@ -1,6 +1,7 @@
 package com.codedgarcia.expenses.manager.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -45,6 +46,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
+        String message = "Database integrity violation";
+        String technicalMessage = ex.getMessage() != null ? ex.getMessage() : "";
+
+        if (technicalMessage.contains("fk_transaction_category") || technicalMessage.contains("categories")) {
+            message = "No se puede eliminar o modificar la categoría porque tiene transacciones asociadas.";
+        }
+
+        return buildErrorResponse(HttpStatus.CONFLICT, "Conflict", message, request);
     }
 
     @ExceptionHandler(Exception.class)
