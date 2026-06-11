@@ -12,9 +12,12 @@ import com.codedgarcia.expenses.manager.transaction.repository.TransactionReposi
 import com.codedgarcia.expenses.manager.user.entity.User;
 import com.codedgarcia.expenses.manager.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -71,12 +74,30 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public Page<TransactionResponse> getTransactions(Long userId, Pageable pageable) {
+        return transactionRepository.findByUserId(userId, pageable)
+                .map(transactionMapper::toResponse);
+    }
+
+    @Override
     public List<TransactionResponse> getTransactionsByUserIdAndType(Long userId, Type type) {
         return transactionRepository
                 .findByUserIdAndCategoryType(userId, type)
                 .stream()
                 .map(transactionMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    public Page<TransactionResponse> getTransactionsByUserIdAndType(Long userId, Type type, Pageable pageable) {
+        return transactionRepository.findByUserIdAndCategoryType(userId, type, pageable)
+                .map(transactionMapper::toResponse);
+    }
+
+    @Override
+    public Page<TransactionResponse> getTransactionsByDateRange(Long userId, LocalDate start, LocalDate end, Pageable pageable) {
+        return transactionRepository.findByUserIdAndTransactionDateBetween(userId, start, end, pageable)
+                .map(transactionMapper::toResponse);
     }
 
     @Override
