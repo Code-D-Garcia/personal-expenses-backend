@@ -10,6 +10,7 @@ import com.codedgarcia.expenses.manager.category.repository.CategoryRepository;
 import com.codedgarcia.expenses.manager.user.entity.User;
 import com.codedgarcia.expenses.manager.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +67,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<CategoryResponse> getAllCategories(Long userId, org.springframework.data.domain.Pageable pageable) {
+        return categoryRepository.findByUserId(userId, pageable)
+                .map(categoryMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<CategoryResponse> getCategoriesByType(
             Long userId,
             Type type) {
@@ -75,6 +83,13 @@ public class CategoryServiceImpl implements CategoryService {
                 .stream()
                 .map(categoryMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CategoryResponse> getCategoriesByType(Long userId, Type type, org.springframework.data.domain.Pageable pageable) {
+        return categoryRepository.findByUserIdAndType(userId, type, pageable)
+                .map(categoryMapper::toResponse);
     }
 
     @Override

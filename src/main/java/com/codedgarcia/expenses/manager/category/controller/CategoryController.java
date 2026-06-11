@@ -7,6 +7,8 @@ import com.codedgarcia.expenses.manager.category.entity.Type;
 import com.codedgarcia.expenses.manager.category.service.CategoryServiceImpl;
 import com.codedgarcia.expenses.manager.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,13 @@ public class CategoryController {
         return categoryService.getAllCategories(user.getId());
     }
 
+    @GetMapping("/paginated")
+    public Page<CategoryResponse> getPaginatedCategories(
+            @AuthenticationPrincipal User user,
+            Pageable pageable) {
+        return categoryService.getAllCategories(user.getId(), pageable);
+    }
+
     @PostMapping
     public CategoryResponse addCategory(
             @AuthenticationPrincipal User user,
@@ -36,6 +45,14 @@ public class CategoryController {
             @AuthenticationPrincipal User user,
             @RequestParam Type type) {
         return categoryService.getCategoriesByType(user.getId(), type);
+    }
+
+    @GetMapping("/categoriesByTypePaginated")
+    public Page<CategoryResponse> getCategoriesByTypePaginated(
+            @AuthenticationPrincipal User user,
+            @RequestParam Type type,
+            Pageable pageable) {
+        return categoryService.getCategoriesByType(user.getId(), type, pageable);
     }
 
     @GetMapping
@@ -56,9 +73,9 @@ public class CategoryController {
 
     @DeleteMapping
     public void deleteCategory(
-            @AuthenticationPrincipal User user,
-            @RequestParam("categoryId") Long categoryId) {
+            @AuthenticationPrincipal User user, @RequestParam("categoryId") Long categoryId) {
         categoryService.deleteCategory(user.getId(), categoryId);
     }
 
 }
+
